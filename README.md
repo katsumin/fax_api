@@ -17,7 +17,7 @@ api for fax
 ### インストール
 ```sh
 user@raspbx:~/fax_api $ . .venv/bin/activate
-(.venv) user@raspbx:~/fax_api $ pip install
+(.venv) user@raspbx:~/fax_api $ pip install -r requirements.txt
 ```
 
 ### 実行
