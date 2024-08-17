@@ -3,6 +3,9 @@ from flask_restx import Resource, Api, reqparse
 import werkzeug
 import subprocess
 import re
+from flask_cors import CORS
+import os
+import socket
 
 app = Flask(__name__)
 api = Api(app)
@@ -109,15 +112,24 @@ class FaxReceives(FaxBase):
         """
         FAX受信状態取得
         """
+        user = os.getenv("USER")
         list = []
-        lines = self.exec_proc(["sudo", "faxstat", "-r"])
+        lines = self.exec_proc(["sudo", "-u", user, "faxstat", "-r"])
         for f in lines:
             f = f.strip("\r\n")
             if f.endswith(".tif"):
-                cols = f.split(" ")
+                #     cols = f.split(" ")
+                #     list.append({
+                #         "date": cols[len(cols)-2],
+                #         "file": cols[len(cols)-1]})
+                cols = f.split(",")
                 list.append({
-                    "date": cols[len(cols)-2],
-                    "file": cols[len(cols)-1]})
+                    "date": cols[0],
+                    "pages": cols[1],
+                    "sender": cols[2],
+                    "time": cols[3],
+                    "file": cols[4],
+                })
         return {'receives': list}
 
 
@@ -144,4 +156,9 @@ class FaxReceive(FaxBase):
 
 
 if __name__ == '__main__':
+    connect_interface = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    connect_interface.connect(("8.8.8.8", 80))
+    host = connect_interface.getsockname()[0]
+    cors = CORS(app, resources={
+                r"/*": {"origins": f'http://{host}:3000'}})
     app.run(debug=True, host='0.0.0.0')

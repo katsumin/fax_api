@@ -16,9 +16,11 @@ api for fax
 
 ### インストール
 ```sh
+user@raspbx:~/fax_api $ echo 'RcvFmt: "%Y,%p,%s,%h,%f"' > ~/.hylarc
 user@raspbx:~/fax_api $ . .venv/bin/activate
 (.venv) user@raspbx:~/fax_api $ pip install -r requirements.txt
 ```
+- 受信状態取得結果のフォーマットを定義するため、`~/.hylarc`の記述が追加になりました。
 
 ### 実行
 - 下記コマンドで実行し、`http://IPアドレス:5000`でブラウザからアクセス。
